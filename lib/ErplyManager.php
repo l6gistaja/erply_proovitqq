@@ -85,7 +85,7 @@ class ErplyManager
         return true;
     }
     
-    public static function getErrorText($data, $defaultOk = '') {
+    public static function getErrorText($data, $ok = '') {
         if(isset($data['errorCode'])) {
             $error = $data['errorCode'];
             $field = isset($data['errorField']) ? $data['errorField'] : '';
@@ -93,7 +93,7 @@ class ErplyManager
             $error = $data['error'];
             $field = $data['field'];
         }
-        return $error ? '<a href="https://learn-api.erply.com/error-codes" target="_blank">Error '.$error.'</a> @ '.$field : $defaultOk;
+        return $error ? ($error == 1 ? $field : '<a href="https://learn-api.erply.com/error-codes" target="_blank">Error '.$error.'</a> @ '.$field): $ok;
     }
     private function actionAddProdViaApi() {
         if(!$this->isValidProductName()) return;

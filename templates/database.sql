@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS erply_log (
     t1 INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     error INT NOT NULL DEFAULT 0,
-    field VARCHAR(100) NOT NULL DEFAULT ''
+    field TEXT NOT NULL DEFAULT ''
 );
 
 CREATE USER 'erply_proovitqq'@'localhost' IDENTIFIED BY 'erply_proovitqq';
