@@ -1,4 +1,5 @@
 <?php
+
 class ErplyConf
 {
     const SITE = 'demo';
@@ -10,20 +11,20 @@ class ErplyConf
                 'username' => '...',
                 'password' => '...'
             ],
-            'productGroup' => 0
+            'productGroup' => 1
         ]
 	];
 	
 	const RABBITMQ = [
-        'host' => '...',
-        'port' => ...,
-        'username' => '...',
-        'password' => '...',
-        'erply_queue' => 'Erply_RPC'
+        'host' => 'localhost',
+        'port' => 5672,
+        'username' => 'guest',
+        'password' => 'guest',
+        'erply_queue' => 'Erply_request'
 	];
 	
 	const DATABASE = [
-        'dsn' => 'mysql:dbname=erply_proovitqq;host=...',
+        'dsn' => 'mysql:dbname=erply_proovitqq;host=127.0.0.1',
         'username' => 'erply_proovitqq',
         'password' => 'erply_proovitqq'
 	];

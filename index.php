@@ -19,6 +19,7 @@
     <form method="post">
     <input type="text" placeholder="Product name" name="name" value="<?= $em->response['data']['name'] ?>"/>
     <input type="submit" name="actionAddProdViaApi" value="Add via API"/>
+    <input type="submit" name="actionAddProdViaRabbit" value="Add via Rabbit"/>
     <input type="submit" name="actionShowLog" value="View Rabbit Log"/>
     <input type="submit" name="actionDeleteLog" value="Delete Rabbit Log"/>
     <input type="submit" name="actionGetProductGroups" value="View product groups"/>
@@ -28,13 +29,13 @@
 <?php 
 
     if(isset($em->response['log'])) {
-        print "<table border='1' cellpadding='5' style='border-collapse: collapse'><tr><th>Product</th><th>Status</th><th>Request</th><th>Response</th></tr>\n";
+        print "<table border='1' cellpadding='5' style='border-collapse: collapse'><tr><th>Product</th><th>Status</th><th>Finished</th></tr>\n";
         foreach($em->response['log'] as $r) {
             print "<tr><td>".$r['name']."</td><td>"
-                .($r['error'] == 0 ? 'OK' : '<a href="https://learn-api.erply.com/error-codes" target="_blank">Error</a> '.$r['error'])
-                ."</td><td>".date('Y-m-d H:i:s',$r['t0'])."</td><td>".date('Y-m-d H:i:s',$r['t1'])."</td>\n";
+                .ErplyManager::getErrorText($r, 'Saved')
+                ."</td><td>".date('Y-m-d H:i:s',$r['t1'])."</td>\n";
         }
-        print "<tr><th>Product</th><th>Status</th><th>Request</th><th>Response</th></tr></table>\n";
+        print "<tr><th>Product</th><th>Status</th><th>Finished</th></tr></table>\n";
     
     }
 

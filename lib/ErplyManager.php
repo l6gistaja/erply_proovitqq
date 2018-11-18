@@ -70,26 +70,59 @@ class ErplyManager
         return $apiResponse;
     }
     
-    private function actionAddProdViaApi() {
+    private function isValidProductName() {
         if($this->response['data']['name'] == '') {
             $this->response['msg'] = "Product name shouldn't be empty.";
-            return;
+            return false;
         }
         $apir = $this->sendRequest("getProducts",
             ["groupID" => $this->site['productGroup'], "name" => $this->response['data']['name']],
             __LINE__);
-        //TODO: target groupID shouldn't be hardcoded, fetch it maybe from results of getProductGroups([]) instead
         if($apir['status']['recordsInResponse'] > 0) {
             $this->response['msg'] = "Product with name '".$this->response['data']['name']."' already exists.";
-            return;
+            return false;
         }
+        return true;
+    }
+    
+    public static function getErrorText($data, $defaultOk = '') {
+        if(isset($data['errorCode'])) {
+            $error = $data['errorCode'];
+            $field = isset($data['errorField']) ? $data['errorField'] : '';
+        } else {
+            $error = $data['error'];
+            $field = $data['field'];
+        }
+        return $error ? '<a href="https://learn-api.erply.com/error-codes" target="_blank">Error '.$error.'</a> @ '.$field : $defaultOk;
+    }
+    private function actionAddProdViaApi() {
+        if(!$this->isValidProductName()) return;
         $apir = $this->sendRequest("saveProduct",
             ["groupID" => $this->site['productGroup'], "name" => $this->response['data']['name']],
             __LINE__);
+        $error = self::getErrorText($apir['status']);
         $this->response['msg'] = "Product with name '".$this->response['data']['name']."' was "
-            .($apir['status']['recordsInResponse'] == 1 ? '' : 'NOT ')
-            ."saved.";
+            .($error == '' ? '' : 'NOT ')
+            ."saved. ".$error;
         $this->response['data']['name'] = "";
+    }
+    
+    private function actionAddProdViaRabbit() {
+        if(!$this->isValidProductName()) return;
+        $connection = self::getRabbitConnection();
+        $channel = $connection->channel();
+        $channel->queue_declare(ErplyConf::RABBITMQ['erply_queue'], false, false, false, false);
+        $msg = new PhpAmqpLib\Message\AMQPMessage(json_encode([
+            'request' => 'saveProduct',
+            'clientCode' => $this->site['api']['clientCode'],
+            'sessionKey' => $this->getSessionId(),
+            'groupID' => $this->site['productGroup'],
+            'name' => $this->response['data']['name']
+        ]));
+        $channel->basic_publish($msg, '', ErplyConf::RABBITMQ['erply_queue']);
+        $channel->close();
+        $connection->close();
+        $this->response['msg'] = "Product sent to Rabbit. View Rabbit log to see was it saved.";
     }
     
     private function actionEndSession() {
@@ -124,7 +157,7 @@ class ErplyManager
     
     public function process() { 
         try {
-            foreach(['actionAddProdViaApi','actionEndSession','actionGetProductGroups','actionShowLog','actionDeleteLog'] as $action) {
+            foreach(['actionAddProdViaApi','actionEndSession','actionGetProductGroups','actionShowLog','actionDeleteLog','actionAddProdViaRabbit'] as $action) {
                 if(isset($_REQUEST[$action])) {
                     $this->$action();
                     return;

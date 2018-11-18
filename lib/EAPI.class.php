@@ -25,11 +25,11 @@ class EAPI
 	{
 		//validate that all required parameters are set
 		if(!$this->url OR !$this->clientCode OR !$this->username OR !$this->password){
-			throw new Exception('Missing parameters', self::MISSING_PARAMETERS);
+			//throw new Exception('Missing parameters', self::MISSING_PARAMETERS);
 		}
 	
 		//add extra params
-		if(!isset($parameters['request'])) $parameters['request'] = $request;
+		$parameters['request'] = $request;
 		if(!isset($parameters['clientCode'])) $parameters['clientCode'] = $this->clientCode;
 		$parameters['version'] = '1.0';
 		if($request != "verifyUser" && !isset($parameters['sessionKey'])) $parameters['sessionKey'] = $this->getSessionKey();
