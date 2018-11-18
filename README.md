@@ -13,6 +13,7 @@ Project was developed in Debian 9.
 1. Copy configuration file template from templates/ErplyConf.php to somewhere outside public web directory, change three dots (...) with your own specific values. Add path to this new file to the first require_once in dependencies.php.
 1. Login to MySQL server and commit commands in file templates/database.sql
 1. On console, go to project's directory and start RabbitMQ listener: ```php receive.php```
+1. Open project's URL in your browser.
 
 # Usage
 
