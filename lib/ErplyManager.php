@@ -123,6 +123,7 @@ class ErplyManager
         $channel->close();
         $connection->close();
         $this->response['msg'] = "Product sent to Rabbit. View Rabbit log to see was it saved.";
+        $this->response['data']['name'] = "";
     }
     
     private function actionEndSession() {
